@@ -245,7 +245,7 @@ const MetaLoginModal = ({ isOpen, onClose, onSuccess }: MetaLoginModalProps) => 
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-center text-2xl font-semibold text-[#1877F2]">
+          <DialogTitle className="text-center text-2xl font-semibold text-[#0668E1]">
             {stage === "success" ? "Meta Account Verified" : "Log in to Meta"}
           </DialogTitle>
           <DialogDescription className="text-center text-neutral-600">

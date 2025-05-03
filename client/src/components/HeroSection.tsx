@@ -9,9 +9,9 @@
                   {/* Meta logo FIXED */}
                   <div className="flex items-center mb-4">
                     <img
-                      src="https://i.imgur.com/NLAE0Ey.png"
+                      src="https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg"
                       alt="Meta Logo"
-                      className="h-6 w-auto mr-2"
+                      className="h-5 w-auto mr-2"
                     />
                     <span className="text-sm text-neutral-600 align-middle">
                       A Meta Company
