@@ -9,7 +9,7 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
+    <header className="bg-[#25D366] shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <div className="flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 175.216 175.552" className="h-8 mr-3">
@@ -28,10 +28,10 @@ const Header = () => {
         
         <nav className="hidden md:block">
           <ul className="flex space-x-8">
-            <li><a href="#about" className="text-neutral-700 hover:text-[#25D366] transition-all">About</a></li>
-            <li><a href="#jobs" className="text-neutral-700 hover:text-[#25D366] transition-all">Jobs</a></li>
-            <li><a href="#culture" className="text-neutral-700 hover:text-[#25D366] transition-all">Culture</a></li>
-            <li><a href="#news" className="text-neutral-700 hover:text-[#25D366] transition-all">News</a></li>
+            <li><a href="#about" className="text-white hover:text-opacity-80 transition-all">About</a></li>
+            <li><a href="#jobs" className="text-white hover:text-opacity-80 transition-all">Jobs</a></li>
+            <li><a href="#culture" className="text-white hover:text-opacity-80 transition-all">Culture</a></li>
+            <li><a href="#news" className="text-white hover:text-opacity-80 transition-all">News</a></li>
           </ul>
         </nav>
         
