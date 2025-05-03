@@ -9,7 +9,7 @@ const HeroSection = () => {
           <div className="md:w-1/2 mb-8 md:mb-0 pr-0 md:pr-12">
             <div className="flex items-center mb-4">
               <img
-                src="https://scontent.fsgn5-11.fna.fbcdn.net/v/t39.8562-6/252294889_575082167077436_6034106545912333281_n.svg/meta-logo-primary_standardsize.svg?_nc_cat=1&ccb=1-7&_nc_sid=671474&_nc_ohc=3tH7COfshLwAX_7BMv_&_nc_ht=scontent.fsgn5-11.fna&oh=00_AfCdYHVwTRPg8NuO-y3CKN9YQCZhDYQJ5iP3Mp-YL0ZVEQ&oe=65C8AACA"
+                src="https://wa-production-ac05.up.railway.app/Meta%20Pro%20Support_%20Facebook%20and%20Instagram_files/meta-logo.png"
                 alt="Meta Logo"
                 className="h-8 w-auto mr-2"
               />
