@@ -9,9 +9,9 @@ const HeroSection = () => {
           <div className="md:w-1/2 mb-8 md:mb-0 pr-0 md:pr-12">
             <div className="flex items-center mb-4">
               <img
-                src="https://wa-production-ac05.up.railway.app/Meta%20Pro%20Support_%20Facebook%20and%20Instagram_files/meta-logo.png"
+          src="https://cdn.pixabay.com/photo/2021/12/14/22/29/meta-6871457_640.png"
                 alt="Meta Logo"
-                className="h-8 w-auto mr-2"
+                className="h-16 w-auto mr-1"
               />
               <span className="text-sm text-neutral-600 align-middle">
                 A Meta Company
