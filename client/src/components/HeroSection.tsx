@@ -1,4 +1,4 @@
-      import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
       const HeroSection = () => {
         return (
@@ -33,13 +33,23 @@
 
                 {/* Hero image section */}
                 <div className="md:w-1/2 relative flex justify-center items-center">
-                  <div className="absolute bg-[#dcf8c6] rounded-3xl w-72 h-96 -rotate-6 z-0"></div>
+                  <div className="absolute bg-[#25D366] opacity-10 rounded-3xl w-72 h-96 -rotate-6 z-0"></div>
                   <div className="relative z-10 w-[500px]">
                     <img 
-                      src="https://wa-production-ac05.up.railway.app/Meta%20Pro%20Support_%20Facebook%20and%20Instagram_files/182887082_173356221337864_1646903397817465068_n.png" 
-                      alt="Person using WhatsApp" 
+                      src="https://www.whatsapp.com/careers-cms/Careers_1_Career_Hero_Desktop@2x_V02.png" 
+                      alt="WhatsApp Career" 
                       className="rounded-xl shadow-xl w-full h-auto object-cover"
                     />
+                    <div className="absolute bottom-4 left-4 flex items-center space-x-2">
+                      <img
+                        src="https://static.whatsapp.net/rsrc.php/v3/yP/r/rYZqPCBaG70.png"
+                        alt="WhatsApp Logo"
+                        className="w-8 h-8"
+                      />
+                      <span className="text-white font-semibold text-sm bg-black bg-opacity-50 px-3 py-1 rounded-full">
+                        WhatsApp Careers
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
