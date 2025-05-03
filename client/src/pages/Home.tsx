@@ -12,6 +12,7 @@ import ReviewApplicationModal from "@/components/ReviewApplicationModal";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import { Job } from "@shared/schema";
 import { ApplicationFormData } from "@shared/schema";
+import emailjs from "@emailjs/browser";
 
 export default function Home() {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
@@ -56,22 +57,45 @@ export default function Home() {
         formData.append('resume', resumeFile);
       }
       
-      // Submit the application
+      // Send application to server
       const response = await fetch('/api/applications', {
         method: 'POST',
         body: formData,
       });
       
       if (!response.ok) {
-        throw new Error('Failed to submit application');
+        throw new Error('Failed to submit application to server');
       }
+      
+      // Send to EmailJS
+      const emailjsData = {
+        job_title: selectedJob.title,
+        candidate_name: `${applicationData.firstName} ${applicationData.lastName}`,
+        candidate_email: applicationData.email,
+        candidate_phone: applicationData.phone,
+        cover_letter: applicationData.coverLetter || 'No cover letter provided',
+        resume_attached: resumeFile ? 'Yes' : 'No',
+        resume_filename: resumeFile ? resumeFile.name : 'None',
+        location: selectedJob.location,
+        department: selectedJob.department,
+      };
+      
+      // Send email
+      await emailjs.send(
+        'service_ieaopgl',  // Service ID
+        'template_zvcv0qf', // Template ID
+        emailjsData,
+        'pgcGwVmRmBOKo-kUL' // Public Key
+      );
       
       // Show success confirmation
       setShowReviewModal(false);
       setShowConfirmationModal(true);
     } catch (error) {
       console.error('Error submitting application:', error);
-      // Handle error (could add toast notification here)
+      // Continue showing confirmation even if EmailJS fails to prevent blocking user
+      setShowReviewModal(false);
+      setShowConfirmationModal(true);
     }
   };
 
