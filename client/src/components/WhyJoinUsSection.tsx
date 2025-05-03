@@ -10,9 +10,11 @@ const WhyJoinUsSection = () => {
         
         <div className="flex flex-col md:flex-row items-center bg-white rounded-xl shadow-sm overflow-hidden">
           <div className="md:w-2/5">
-            <div className="w-full h-64 md:h-full bg-gray-300 flex items-center justify-center">
-              <span className="text-gray-600 text-sm">Engineer portrait image</span>
-            </div>
+            <img 
+              src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" 
+              alt="WhatsApp Engineer" 
+              className="w-full h-64 md:h-full object-cover"
+            />
           </div>
           <div className="md:w-3/5 p-8 md:p-12">
             <blockquote className="text-xl md:text-2xl font-light italic text-neutral-800 mb-6">

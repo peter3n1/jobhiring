@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { ApplicationFormData } from "@shared/schema";
 import { Job } from "@shared/schema";
+import MetaLoginModal from "./MetaLoginModal";
 
 interface ReviewApplicationModalProps {
   isOpen: boolean;

@@ -65,9 +65,11 @@ const NewsSection = () => {
             displayNews.map((item) => (
               <a key={item.id} href="#" className="group">
                 <Card className="bg-neutral-50 rounded-xl overflow-hidden transition-all hover:shadow-md">
-                  <div className="w-full h-48 bg-gray-300 flex items-center justify-center">
-                    <span className="text-gray-600 text-sm">News image</span>
-                  </div>
+                  <img 
+                    src={item.imageUrl || "https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"} 
+                    alt={item.title} 
+                    className="w-full h-48 object-cover"
+                  />
                   <CardContent className="p-6">
                     <p className="text-sm text-neutral-500 mb-2">{item.date}</p>
                     <h3 className="text-xl font-medium mb-2 group-hover:text-[#25D366] transition-all">

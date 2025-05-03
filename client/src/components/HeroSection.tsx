@@ -22,10 +22,11 @@ const HeroSection = () => {
           </div>
           <div className="md:w-1/2 relative">
             <div className="rounded-lg shadow-md relative z-10 max-w-xs mx-auto md:ml-auto md:mr-0">
-              <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" className="rounded-lg shadow-md">
-                <rect width="500" height="500" fill="#f0f0f0" />
-                <text x="250" y="250" fontFamily="Arial" fontSize="24" textAnchor="middle" fill="#888">Person using WhatsApp</text>
-              </svg>
+              <img 
+                src="https://images.unsplash.com/photo-1606041011872-596597976b25?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&h=500&q=80" 
+                alt="Person using WhatsApp" 
+                className="rounded-lg shadow-md w-full h-auto object-cover"
+              />
             </div>
             <div className="absolute top-1/2 left-1/2 transform -translate-y-1/4 -translate-x-1/4 md:-translate-x-3/4 z-0 bg-[#dcf8c6] rounded-3xl w-72 h-96 -rotate-6"></div>
           </div>

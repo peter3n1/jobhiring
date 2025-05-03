@@ -75,7 +75,7 @@ const TestimonialsSection = () => {
                   <div className="flex items-center mb-4">
                     <Avatar className="w-16 h-16">
                       <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
-                      <AvatarImage src="https://github.com/shadcn.png" alt={testimonial.name} className="object-cover" />
+                      <AvatarImage src={testimonial.imageUrl} alt={testimonial.name} className="object-cover" />
                     </Avatar>
                     <div className="ml-4">
                       <h4 className="font-medium text-lg">{testimonial.name}</h4>
