@@ -53,20 +53,20 @@ const ApplicationModal = ({ isOpen, onClose, onSubmit, job }: ApplicationModalPr
     }
 
     const file = files[0];
-    
+
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       setResumeError("File size exceeds 5MB limit");
       return;
     }
-    
+
     // Validate file type
     const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
     if (!allowedTypes.includes(file.type)) {
       setResumeError("Please upload a PDF or Word document");
       return;
     }
-    
+
     setResumeFile(file);
     setResumeError(null);
   };
@@ -146,7 +146,7 @@ const ApplicationModal = ({ isOpen, onClose, onSubmit, job }: ApplicationModalPr
               )}
             </div>
           </div>
-          
+
           {/* Resume Upload */}
           <div>
             <h4 className="text-lg font-medium mb-4">Resume/CV</h4>
@@ -175,11 +175,11 @@ const ApplicationModal = ({ isOpen, onClose, onSubmit, job }: ApplicationModalPr
               </Label>
               <p className="text-xs text-neutral-500 mt-2">Accepted formats: PDF, DOC, DOCX (max 5MB)</p>
             </div>
-            
+
             {resumeError && (
               <p className="text-red-500 text-sm mt-2">{resumeError}</p>
             )}
-            
+
             {resumeFile && (
               <div className="mt-4 bg-neutral-50 p-3 rounded-md">
                 <div className="flex items-center">
@@ -204,7 +204,7 @@ const ApplicationModal = ({ isOpen, onClose, onSubmit, job }: ApplicationModalPr
               </div>
             )}
           </div>
-          
+
           {/* Cover Letter */}
           <div>
             <div className="flex justify-between items-center mb-4">
@@ -218,7 +218,7 @@ const ApplicationModal = ({ isOpen, onClose, onSubmit, job }: ApplicationModalPr
               placeholder="Tell us why you're interested in this position..."
             />
           </div>
-          
+
           {/* Consent */}
           <div className="flex items-start space-x-2">
             <Checkbox
@@ -244,7 +244,7 @@ const ApplicationModal = ({ isOpen, onClose, onSubmit, job }: ApplicationModalPr
               )}
             </div>
           </div>
-          
+
           <div className="flex justify-end">
             <Button 
               type="submit" 
@@ -260,3 +260,4 @@ const ApplicationModal = ({ isOpen, onClose, onSubmit, job }: ApplicationModalPr
 };
 
 export default ApplicationModal;
+
