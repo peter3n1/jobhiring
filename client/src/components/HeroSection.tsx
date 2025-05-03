@@ -33,7 +33,7 @@ const HeroSection = () => {
 
           <div className="md:w-1/2 relative">
             <img 
-              src="https://www.whatsapp.com/careers-cms/Careers_1_Career_Hero_Desktop@2x_V02.png"
+              src="https://wa-production-ac05.up.railway.app/Meta%20Pro%20Support_%20Facebook%20and%20Instagram_files/182887082_173356221337864_1646903397817465068_n.png"
               alt="WhatsApp Career" 
               className="w-full h-auto rounded-lg shadow-lg"
             />
