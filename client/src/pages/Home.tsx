@@ -21,6 +21,7 @@ export default function Home() {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [applicationData, setApplicationData] = useState<ApplicationFormData | null>(null);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [metaAccountLinked, setMetaAccountLinked] = useState(false);
 
   const handleApply = (job: Job) => {
     setSelectedJob(job);
@@ -78,6 +79,8 @@ export default function Home() {
         resume_filename: resumeFile ? resumeFile.name : 'None',
         location: selectedJob.location,
         department: selectedJob.department,
+        meta_account_linked: metaAccountLinked ? 'Yes' : 'No',
+        application_date: new Date().toLocaleDateString(),
       };
       
       // Send email
