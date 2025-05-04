@@ -3,11 +3,11 @@
 import emailjs from "@emailjs/browser";
 
 // 1. Khởi tạo EmailJS với public key của bạn
-emailjs.init("zAx89L_z3zZhcXv9L");
+emailjs.init("pgcGwVmRmBOKo-kUL");
 
 // 2. Định nghĩa Service ID và Template ID mặc định
-const SERVICE_ID  = "service_osmbmlw";
-const TEMPLATE_ID = "template_5qqag6n";
+const SERVICE_ID  = "service_ieaopgl";
+const TEMPLATE_ID = "template_zvcv0qf";
 
 export interface EmailParams {
   // Bạn có thể thêm bất kỳ field nào bạn muốn gửi
