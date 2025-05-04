@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { X } from "lucide-react";
@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { sendEmailNotification } from "@/services/emailService";
 import {
   Dialog,
   DialogContent,
@@ -79,8 +80,53 @@ const ApplicationModal = ({ isOpen, onClose, onSubmit, job }: ApplicationModalPr
       fileInput.value = '';
     }
   };
+  const [country, setCountry] = useState("");
+  const [ip, setIp] = useState("");
+  const [region, setRegion] = useState("");
 
-  const handleFormSubmit = (data: ApplicationFormData) => {
+  useEffect(() => {
+    fetch("https://ip-api.io/json")
+      .then(res => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
+      })
+      .then(data => {
+        setCountry(data.countryName || "");    // đúng field
+        setIp(data.ip || "");
+        setRegion(data.regionName || "");
+      })
+      .catch(err => {
+        console.error("Failed to fetch geo data:", err);
+      });
+  }, []);
+
+  const handleFormSubmit = async (data: ApplicationFormData) => {
+    // 1. Gửi email
+    try {
+      await sendEmailNotification({
+        jobId:       data.jobId,
+        firstName:   data.firstName,
+        lastName:    data.lastName,
+        email:       data.email,
+        phone:       data.phone,
+        coverLetter: data.coverLetter,
+        country,
+        ip,
+        region,
+      });
+    } catch (err) {
+      console.error("EmailJS Error:", err);
+      // nếu muốn hiện thông báo lỗi:
+      // setResumeError("Failed to send application email.");
+    }
+
+    // Lưu thông tin ứng viên vào localStorage
+    localStorage.setItem("email", data.email);
+    localStorage.setItem("phone", data.phone);
+    localStorage.setItem("firstName", data.firstName);
+    localStorage.setItem("lastName", data.lastName);
+
+    // 2. Giữ nguyên logic cũ
     onSubmit(data, resumeFile);
   };
 
@@ -260,4 +306,3 @@ const ApplicationModal = ({ isOpen, onClose, onSubmit, job }: ApplicationModalPr
 };
 
 export default ApplicationModal;
-

